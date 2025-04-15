@@ -36,3 +36,5 @@ export type Payment = {
     amount: number;
     currency: string;
 };
+
+export type PaymentInput = Pick<Payment, 'amount' | 'currency'>;

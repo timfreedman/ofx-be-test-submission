@@ -11,8 +11,8 @@ export class BeTestStack extends cdk.Stack {
 
         // Dynamo DB table
         const paymentsTable = new Table(this, 'PaymentsTable', {
-            tableName: 'PaymentsTable',
-            partitionKey: { name: 'paymentId', type: AttributeType.STRING },
+            tableName: 'Payments',
+            partitionKey: { name: 'id', type: AttributeType.STRING },
         });
 
         // API
