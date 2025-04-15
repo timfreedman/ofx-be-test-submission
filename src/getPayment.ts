@@ -11,5 +11,5 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     return buildResponse(404, { error: 'Payment not found' });
   }
 
-  return buildResponse(200, paymentResult);
+  return buildResponse(200, { data: paymentResult });
 };

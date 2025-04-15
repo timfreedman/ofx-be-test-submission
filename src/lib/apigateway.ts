@@ -1,6 +1,14 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 
-export const buildResponse = (statusCode: number, body: Object): APIGatewayProxyResult => {
+interface ApiResponseSuccess {
+  data: Object | Array<Object>;
+}
+
+interface ApiResponseError {
+  error: string;
+}
+
+export const buildResponse = (statusCode: number, body: ApiResponseSuccess | ApiResponseError): APIGatewayProxyResult => {
     return {
         statusCode,
         body: JSON.stringify(body),
