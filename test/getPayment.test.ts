@@ -39,10 +39,10 @@ describe('When the user requests the records for a specific payment', () => {
       expect(getPaymentMock).toHaveBeenCalledWith(paymentId);
     });
 
-    it('Returns with a HTTP 422 status and validation error if the payment id is not valid', async () => {
+    it('Returns a HTTP 422 status and validation error if the payment id is not valid', async () => {
       const paymentId = '(^&$*dfgrs--+\n\r@!``!<>';
       const getPaymentMock = jest.spyOn(payments, 'getPayment');
-      const logMock = jest.spyOn(console, 'log').mockImplementationOnce(() => { });
+      const logMock = jest.spyOn(console, 'error').mockImplementationOnce(() => { });
       const mockResponse = {
         error: 'Invalid input',
       };
