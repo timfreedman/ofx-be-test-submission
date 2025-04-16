@@ -45,7 +45,7 @@ describe('When the user requests to create a payment', () => {
       const createPaymentMock = jest.spyOn(payments, 'createPayment').mockResolvedValueOnce(undefined);
       const logMock = jest.spyOn(console, 'error').mockImplementationOnce(() => { });
 
-      // @ts-ignore-next-line, purposely the incorrect input type
+      // @ts-ignore-next-line, purposely parsing the incorrect input type
       const result = await createPaymentHandler(paymentData);
 
       expect(result.statusCode).toBe(422);
