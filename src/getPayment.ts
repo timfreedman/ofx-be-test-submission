@@ -3,25 +3,32 @@ import { buildResponse } from './lib/apigateway';
 import { getPayment } from './lib/payments';
 import type { PaymentParameters } from './models/payments';
 import { z } from 'zod';
+import { apiErrorResponse, apiSuccessResponse } from './lib/apiResponse';
+import type { ControllerResult } from './models/controller';
 
 const pathParamsSchema = z.object({
   id: z.string().uuid()
 }).strict();
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+async function getPaymentsController(event: APIGatewayProxyEvent): Promise<ControllerResult> {
   const pathParamsRaw = event.pathParameters as unknown as PaymentParameters;
   const { data: pathParamsParsed, error: parseError } = pathParamsSchema.safeParse(pathParamsRaw);
 
   if (parseError) {
     console.error(parseError.issues);
-    return buildResponse(422, { error: 'Invalid input' });
+    return { result: apiErrorResponse('Invalid input'), statusCode: 422 };
   }
 
   const paymentResult = await getPayment(pathParamsParsed.id);
 
   if (!paymentResult) {
-    return buildResponse(404, { error: 'Payment not found' });
+    return { result: apiErrorResponse('Payment not found'), statusCode: 404 };
   }
 
-  return buildResponse(200, { data: paymentResult });
+  return { result: apiSuccessResponse(paymentResult), statusCode: 200 };
+}
+
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  const { result, statusCode } = await getPaymentsController(event);
+  return buildResponse(statusCode, result);
 };
