@@ -1,5 +1,6 @@
 import { DocumentClient } from './dynamodb';
 import { GetCommand, PutCommand, ScanCommand, ScanCommandInput } from '@aws-sdk/lib-dynamodb';
+import type { Payment, PaymentFilters } from '../models/payments';
 
 export const getPayment = async (paymentId: string): Promise<Payment | null> => {
     const result = await DocumentClient.send(
@@ -42,19 +43,3 @@ export const createPayment = async (payment: Payment) => {
         })
     );
 };
-
-export interface Payment {
-    id: string;
-    amount: number;
-    currency: string;
-};
-
-export type PaymentInput = Pick<Payment, 'amount' | 'currency'>;
-
-export interface PaymentFilters {
-    currency?: string;
-};
-
-export interface PaymentParameters {
-  id: string;
-}

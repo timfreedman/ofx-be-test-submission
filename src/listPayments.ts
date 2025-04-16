@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { buildResponse } from './lib/apigateway';
 import { listPayments } from './lib/payments';
-import type { PaymentFilters } from './lib/payments';
+import type { PaymentFilters } from './models/payments';
 import { z } from 'zod';
 
 const filterSchema = z.object({

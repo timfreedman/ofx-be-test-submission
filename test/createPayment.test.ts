@@ -2,7 +2,7 @@ import * as payments from '../src/lib/payments';
 import { z } from 'zod';
 import { handler } from '../src/createPayment';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import type { PaymentInput } from '../src/lib/payments';
+import type { PaymentInput } from '../src/models/payments';
 
 async function createPaymentHandler(paymentData: PaymentInput) {
   const result = await handler({ body: JSON.stringify(paymentData) } as unknown as APIGatewayProxyEvent);

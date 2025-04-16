@@ -1,7 +1,8 @@
 import { randomUUID } from 'crypto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { buildResponse, parseInput } from './lib/apigateway';
-import { createPayment, PaymentInput } from './lib/payments';
+import { createPayment } from './lib/payments';
+import type { PaymentInput } from './models/payments';
 import { z } from 'zod';
 
 const paymentSchema = z.object({

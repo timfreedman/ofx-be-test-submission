@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { buildResponse } from './lib/apigateway';
-import { getPayment, PaymentParameters } from './lib/payments';
+import { getPayment } from './lib/payments';
+import type { PaymentParameters } from './models/payments';
 import { z } from 'zod';
 
 const pathParamsSchema = z.object({
