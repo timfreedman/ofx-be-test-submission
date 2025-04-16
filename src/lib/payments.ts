@@ -1,11 +1,12 @@
 import { DocumentClient } from './dynamodb';
 import { GetCommand, PutCommand, ScanCommand, ScanCommandInput } from '@aws-sdk/lib-dynamodb';
 import type { Payment, PaymentFilters } from '../models/payments';
+import { PAYMENTS_TABLE_NAME } from '../../lib/constants';
 
 export const getPayment = async (paymentId: string): Promise<Payment | null> => {
     const result = await DocumentClient.send(
         new GetCommand({
-            TableName: 'Payments',
+            TableName: PAYMENTS_TABLE_NAME,
             Key: { id: paymentId },
         })
     );
@@ -15,7 +16,7 @@ export const getPayment = async (paymentId: string): Promise<Payment | null> => 
 
 export const listPayments = async (filters: PaymentFilters): Promise<Payment[]> => {
     let scanOptions: ScanCommandInput = {
-        TableName: 'Payments'
+        TableName: PAYMENTS_TABLE_NAME
     };
 
     if (filters.currency) {
@@ -38,7 +39,7 @@ export const listPayments = async (filters: PaymentFilters): Promise<Payment[]> 
 export const createPayment = async (payment: Payment) => {
     await DocumentClient.send(
         new PutCommand({
-            TableName: 'Payments',
+            TableName: PAYMENTS_TABLE_NAME,
             Item: payment,
         })
     );

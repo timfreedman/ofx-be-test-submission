@@ -4,6 +4,7 @@ import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
+import { PAYMENTS_TABLE_NAME } from './constants';
 
 export class BeTestStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -11,7 +12,7 @@ export class BeTestStack extends cdk.Stack {
 
         // Dynamo DB table
         const paymentsTable = new Table(this, 'PaymentsTable', {
-            tableName: 'Payments',
+            tableName: PAYMENTS_TABLE_NAME,
             partitionKey: { name: 'id', type: AttributeType.STRING },
         });
 
@@ -26,24 +27,31 @@ export class BeTestStack extends cdk.Stack {
         const specificPaymentResource = paymentsResource.addResource('{id}');
 
         // Functions
-        const createPaymentFunction = this.createLambda('createPayment', 'src/createPayment.ts');
+        const createPaymentFunction = this.createLambda('createPayment', 'src/createPayment.ts', {
+          PAYMENTS_TABLE_NAME
+        });
         paymentsTable.grantWriteData(createPaymentFunction);
         paymentsResource.addMethod('POST', new LambdaIntegration(createPaymentFunction));
 
-        const getPaymentFunction = this.createLambda('getPayment', 'src/getPayment.ts');
+        const getPaymentFunction = this.createLambda('getPayment', 'src/getPayment.ts', {
+          PAYMENTS_TABLE_NAME
+        });
         paymentsTable.grantReadData(getPaymentFunction);
         specificPaymentResource.addMethod('GET', new LambdaIntegration(getPaymentFunction));
 
-        const listPaymentsFunction = this.createLambda('listPayments', 'src/listPayments.ts');
+        const listPaymentsFunction = this.createLambda('listPayments', 'src/listPayments.ts', {
+          PAYMENTS_TABLE_NAME
+        });
         paymentsTable.grantReadData(listPaymentsFunction);
         paymentsResource.addMethod('GET', new LambdaIntegration(listPaymentsFunction));
     }
 
-    createLambda = (name: string, path: string) => {
+    createLambda = (name: string, path: string, env: { [key: string]: string } = {}) => {
         return new NodejsFunction(this, name, {
             functionName: name,
-            runtime: Runtime.NODEJS_16_X,
+            runtime: Runtime.NODEJS_22_X,
             entry: path,
+            environment: env,
         });
     };
 }
