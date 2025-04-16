@@ -6,10 +6,13 @@ import type { PaymentInput } from './models/payments';
 import { z } from 'zod';
 import { ControllerResult } from './models/controller';
 import { apiErrorResponse, apiSuccessResponse } from './lib/apiResponse';
+import * as currencyCodes from 'currency-codes';
+
+const { codes: codeList } = currencyCodes;
 
 const paymentSchema = z.object({
   amount: z.number().min(0),
-  currency: z.string().min(3).max(3)
+  currency: z.string().toUpperCase().length(3).refine((val) => codeList().includes(val))
 }).strict();
 
 async function createPaymentController(event: APIGatewayProxyEvent): Promise<ControllerResult> {

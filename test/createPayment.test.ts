@@ -30,6 +30,30 @@ describe('When the user requests to create a payment', () => {
       expect(createPaymentMock).toHaveBeenCalledWith({ ...paymentData, id: resultData.data.id });
     });
 
+    it('Creates the payment and transforms the currency code to uppercase when given a valid code in lowercase', async () => {
+      const paymentData = {
+        currency: 'aud',
+        amount: 10
+      };
+      const mockLibRequestData = {
+        currency: 'AUD',
+        amount: 10
+      };
+      const mockReturnSchema = z.object({
+        data: z.object({
+          id: z.string().uuid()
+        })
+      });
+      const createPaymentMock = jest.spyOn(payments, 'createPayment').mockResolvedValueOnce(undefined);
+
+      const result = await createPaymentHandler(paymentData);
+      const resultData = JSON.parse(result.body);
+
+      expect(result.statusCode).toBe(201);
+      expect(mockReturnSchema.safeParse(resultData).success).toBe(true);
+      expect(createPaymentMock).toHaveBeenCalledWith({ ...mockLibRequestData, id: resultData.data.id });
+    });
+
     it('Returns with a HTTP 422 status and validation error if the payment input data is not valid', async () => {
       const paymentData = {
         id: 1234,
@@ -38,6 +62,26 @@ describe('When the user requests to create a payment', () => {
         volume: 10000000,
         paymentTime: Date.now(),
         active: true
+      };
+      const mockReturnData = {
+        error : 'Invalid input'
+      };
+      const createPaymentMock = jest.spyOn(payments, 'createPayment').mockResolvedValueOnce(undefined);
+      const logMock = jest.spyOn(console, 'error').mockImplementationOnce(() => { });
+
+      // @ts-ignore-next-line, purposely parsing the incorrect input type
+      const result = await createPaymentHandler(paymentData);
+
+      expect(result.statusCode).toBe(422);
+      expect(JSON.parse(result.body)).toEqual(mockReturnData);
+      expect(createPaymentMock).not.toHaveBeenCalled();
+      expect(logMock).toHaveBeenCalled();
+    });
+
+    it('Return a HTTP 422 status and validation error if the currency given does not match an ISO currency code', async () => {
+      const paymentData = {
+        currency: 'QQQ',
+        amount: 10,
       };
       const mockReturnData = {
         error : 'Invalid input'
